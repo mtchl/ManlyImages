@@ -189,7 +189,7 @@ function loadBigItem($clicked){
     bigdiv.fadeIn();
 
 
-   var workurl = 'http://api.trove.nla.gov.au/work/' + wk.id + '?key=vl6ahuf5l47j4vaq&encoding=json&callback=?';  
+   var workurl = 'http://api.trove.nla.gov.au/work/' + wk.id + '?key='+ apikey +'&encoding=json&callback=?';  
    $.getJSON(workurl, function(data){
       if (data.work.issued != null) $('#bigitem .bigworkinfo').append('<h4> date: ' + data.work.issued + '</h4>');
       if (data.work.contributor != null) $('#bigitem .bigworkinfo').append('<h4> creator: ' + data.work.contributor[0] + '</h4>');
