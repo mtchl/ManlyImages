@@ -1,0 +1,120 @@
+<html>
+<head>
+	<title>Trove Explorer test</title>
+	<script src="lib/jquery-1.7.min.js" type="text/javascript"></script>
+  <script src="lib/jquery.tinysort.min.js" type="text/javascript"></script>
+  <link href="rows.css" media="screen" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+  </style>
+</head>
+<body>
+
+
+<script type="text/javascript">
+
+var page = 0;
+var maxpages = 62;//61; // 6152 total records
+var minClusterSize = 5;
+var clustertotal = 0;
+
+var decade_histo = [];
+//decade_histo["nd"] = [];
+var clusters = [];
+var items = []; // item IDs
+var workmap = {}; // associative array of works, indexed by ID
+var wordmap = {};
+var stopwords = ["The","and","the","Manly","length","from","for","For","with","title","North","north","South","south","East","east","West","west"]; // ouch - gotta include "length" because it's a special property... this is why we need to use a proper data structure...
+
+var module_height = 72;
+var module_margin = 4;
+
+var maxloads = 10000; // max num images to load
+var loadcount = 0;
+var thumbprefix = "http://www.photosau.com.au/Manlylib/Jthumb/";
+
+var rotateBg;
+
+var minlabelsize = 10; // min font size for labels
+var mintermsize = 10; // min font size for cluster terms
+
+var clusterbgnum = 0;
+
+var nulldatecount = 0;
+var titleyrcount = 0;
+
+$(document).ready(function()
+{
+	loadXml();
+ // loadWorks();
+});
+
+function loadXml(){// load from Trove
+  console.log("loading page " + page + " of " + maxpages);
+  var url = "http://api.trove.nla.gov.au/result?key=vl6ahuf5l47j4vaq&zone=picture&q=%22Manly%20City%20Council%22&n=100&s=" + page*100;
+
+  $.get(url, function(data) {
+    parseWorks(data);
+    page++;
+    if (page < maxpages) loadXml();
+    else {
+      writeJSON();
+    }
+  });
+}
+
+function parseWorks(works){
+  $(works).find("work").each(function(){
+        var title = $(this).find('title').text();
+        var issued = $(this).find('issued').text(); //title.match('[0-9][0-9][0-9][0-9]');
+        var firstyrissued = issued.match(/(17|18|19|20)\d{2}/g);
+        var yr;
+        // TODO - change to title date taking priority? cf http://www.photosau.com/Manly/scripts/ExtSearch.asp?SearchTerm=006674
+        if (firstyrissued == null) { // no year in the data, is there one in the title?
+          nulldatecount ++;
+          var yrintitle = title.match(/(17|18|19|20)\d{2}/g);
+          if (yrintitle != null){
+            yr = yrintitle[0];
+            titleyrcount++;
+          } else {
+            yr = 0;
+          }
+        } else {
+          yr = firstyrissued[0];
+        }
+        
+        var id = $(this).attr("id");
+        var thumburl = $(this).find('identifier[linktype="thumbnail"]').text();
+        var re = /\W+/;
+        var titlewds = title.split(re); //.getUnique(); // NB getUnique to eliminate repeated words in titles
+        titlewds = titlewds.filter(function(element, index, array){
+          return (element.length > 2); // filter out short words
+        });
+        var workobj = {id:id, title:title, year:yr, thumb:thumburl.replace(thumbprefix,"")};
+        workmap[''+id] = workobj; // stash the work in the array
+  });
+}
+
+
+
+function writeJSON(){
+  var jsontxt = JSON.stringify( workmap );
+ document.write(jsontxt);
+ console.log("clicked");
+}
+
+
+</script>
+<div id="container">
+<div id="terms">
+
+
+</div>
+
+</div>
+</body>
+</html>
+
+
+
+
+

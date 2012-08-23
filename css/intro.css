@@ -1,0 +1,72 @@
+#titlebanner, #decadebanner{
+	height:240px;
+    width: 490px;
+    background:#000;
+    float:left;
+	border: 1px solid #444;
+	color: #fff;
+	overflow:hidden;
+	padding:0;
+	position:relative;
+	margin-top:10px;
+	}
+
+#titlebanner h1, #decadebanner h1{
+	text-shadow: 2px 2px 10px #000;
+	left:20px;
+	position:absolute;
+	z-index:10;
+}
+
+#titlebanner img, #decadebanner img{
+	opacity:0.8;
+	z-index:1;
+	position: absolute;
+	-webkit-transition: all 0.5s ;
+    -moz-transition: all 0.5s ;
+}
+
+#titlebanner img:hover, #decadebanner img:hover{
+	opacity:1.0;
+}
+
+#titlebanner img{
+	left: -79px;
+	top:-12px;
+}
+
+#decadebanner img{
+	left: -55px;
+	top:-2px;
+}
+
+#decadebanner h1{
+	top:160px;
+}
+
+#titlebanner{
+	margin-right:16px;
+}
+
+
+.info{
+	width:490px;
+	position: relative;
+	float: left;
+	margin:0;
+}
+
+#infoleft{
+	margin-right:20px;
+}
+
+
+.info h2{
+	margin-bottom: 0;
+	color:black;
+
+}
+
+.info p{
+	margin-top:0px;
+	font-size:16px;
