@@ -8,8 +8,12 @@ html{
 }
 
 body{
-  background:#ddd;
+  background-color:#ddd;
   font-family: 'PT Sans Narrow', sans-serif;
+  background: -webkit-radial-gradient(circle, #eee, #bbb);
+  background: -moz-radial-gradient(circle, #eee, #bbb);
+  background: -ms-radial-gradient(circle, #eee, #bbb);
+
  }
 
 a:link{
