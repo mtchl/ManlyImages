@@ -171,21 +171,21 @@ function addToWordMap(item,wordmap){ // pass this function an item and it will a
   titlewords = titlewords.filter(function(element, index, array){
     return (element.length > 2); // filter out short words
   });
-  if (titlewords.length == 0) console.log("no titlewords");
-   for (var i = titlewords.length - 1; i >= 0; i--) {
-         if (stopwords.contains(titlewords[i]) == false && titlewords[i].search('[0-9][0-9][0-9][0-9]') == -1){
-          var lowercase = titlewords[i].toLowerCase();
-          var titlecase = titlewords[i].substring(0,1).toUpperCase() + titlewords[i].substring(1,titlewords[i].length);
-         // if (item.id == "151685450") console.log(" word: " + titlewords[i]);
-          if ( wordmap.hasOwnProperty(lowercase)  ){ // if the lowercase version of this is in the map
-            addWord(wordmap,lowercase,item.id);
-          } else if (  wordmap.hasOwnProperty(titlecase) ){ // if the title case version is in the map
-           addWord(wordmap,titlecase,item.id);
-          } else {
-            addWord(wordmap,titlewords[i],item.id); // neither is in the map, add it
-          }
+  //if (titlewords.length == 0) console.log("no titlewords");
+ for (var i = titlewords.length - 1; i >= 0; i--) {
+      var tw = titlewords[i];
+       if (stopwords.contains(tw) == false && tw.search('[0-9][0-9][0-9][0-9]') == -1){
+        var lowercase = tw.toLowerCase();
+        var titlecase = tw.substring(0,1).toUpperCase() + tw.substring(1,tw.length);
+        if ( wordmap.hasOwnProperty(lowercase)  ){ // if the lowercase version of this is in the map
+          addWord(wordmap,lowercase,item.id);
+        } else if (  wordmap.hasOwnProperty(titlecase) ){ // if the title case version is in the map
+          addWord(wordmap,titlecase,item.id);
+        } else {
+          addWord(wordmap,tw,item.id); // neither is in the map, add it
         }
-    };
+      }
+  };
 }
 
 function addWord(map,key,item){

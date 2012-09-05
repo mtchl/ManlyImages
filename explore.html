@@ -109,53 +109,34 @@ function buildTitleView(){
 
   if ($decades == undefined && $('#container').children().length > 0){
     $decades = $('#container').children('.clusterdiv').clone(true); // clone the div and store it
-    //clustercache = clusters.slice(0); // grab a copy of the clusters
     
-    $('.clusterdiv').fadeOut(1000,function(){
+    $('#container').fadeOut(1000,function(){
       console.log("emptying container");
         $('#container').empty();
-        // $('#container').show();
         $('#container').addClass("loading");
-        setupClusters();
+        setupClusters(finishTitleBuild);
       });
-    //$('#container').addClass('loading').empty();
   }
-
-  // if ($titles == undefined){
-  //     setupClusters();
-  //   } else {
-  //     $('#container').empty(); 
-  //     $('#container').append($titles); // add the stored DOM elements
-  //   }
 
    if ($titles != undefined){
       $('#container').empty(); 
       $('#container').append($titles); // add the stored DOM elements
     } else {
-       setupClusters();
+       setupClusters(finishTitleBuild);
     }
 
   rotateBg = setInterval(function () { 
-    rotateBackground(titleclusters);
+      rotateBackground(titleclusters);
     }, rotateBgInterval);
 
   displaymode = "title";
-  //$('#container').fadeIn();
 
 }
 
+function finishTitleBuild(){
+  console.log("finished building titles");
+}
 
-
-// function transition(callback){
-//     if ($('#container').children().size() > 0) {
-//       $('#container').fadeOut(1000, function (){
-//       callback();
-//     });
-//     } else {
-//       //callback();
-//       return;
-//     }
-// }
 
 
 </script>

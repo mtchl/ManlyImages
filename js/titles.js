@@ -10,18 +10,20 @@ var titleitems; // container for the titleitems
 
 var titleclusters = [];
 
+//var totalclustercount = 0;
 
-function setupClusters(){
+
+function setupClusters(callback){
    wordmap = {};
    for (var i = items.length - 1; i >= 0; i--) {
       addToWordMap(workmap[items[i]],wordmap);
     };
     titleitems = items.slice(0); // grab a copy of the whole item list
-    buildTitleCluster(0);
+    buildTitleCluster(callback);
 }
 
 
-function buildTitleCluster(rank){
+function buildTitleCluster(callback){
   var sortedmap= bySortedValue(wordmap); // sort map by array length
   //var sortedwords = Object.keys(sortedmap); // just the words
   var topword = sortedmap[0][0];
@@ -51,8 +53,10 @@ function buildTitleCluster(rank){
 
   buildClusterDateHisto(topword,10,titleclusters);
   buildClusterDiv( topword, clusterIDs, topterms ); // build the cluster div
+  //console.log(topword + ' - ' + clusterIDs.length);
+  //totalclustercount += clusterIDs.length;
  if (clusterIDs.length > minClusterSize ) { // more than the min items in the cluster
-    buildTitleCluster(0); // build another cluster
+    buildTitleCluster(callback); // build another cluster
   } else { // make the "others" box and finish up
     titleclusters["others"] = sortClusterItems(titleitems); // stick all the rest in an "others" cluster 
     topterms = sortedmap.slice(1,11); // use the top level term list for the "others" cluster
@@ -61,7 +65,9 @@ function buildTitleCluster(rank){
     $('#container div.clusterdiv').tsort({order:'desc', attr:'data-itemcount'});// sort by name
     
    $('#container').removeClass("loading");
-    
+    //totalclustercount += titleitems.length;
+
+    //console.log(totalclustercount + ' in clusters | ' + items.length + ' items');
    // clusters = titleclusters;
 
     // rotateBg = setInterval(function () { 
@@ -71,6 +77,8 @@ function buildTitleCluster(rank){
     //rotateBackground(); // start rotating bgs
 
     //console.log(clusters[0]);
+
+    callback();
 
  }
 

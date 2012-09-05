@@ -177,6 +177,7 @@ function loadBigItem($clicked){
     bigdiv.append(bigtitle);
     bigimg.on('click', function(){closeBigItem()});
     $('body').append('<div id="backdrop" />');
+    $('#backdrop').on('click',function(){ closeBigItem()});
     $('#wrapper').append(bigdiv);
 
     if (i.width < bigdiv.width()){
