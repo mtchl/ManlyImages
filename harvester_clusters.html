@@ -3,6 +3,10 @@
 	<title>Trove API harvester</title>
     <script src="lib/jquery-1.7.min.js" type="text/javascript"></script>
     <script src="js/apikey.js" type="text/javascript"></script>
+    <script src="js/titles_us.js" type="text/javascript"></script>
+    <script src="js/clusters.js" type="text/javascript"></script>
+    <script src="lib/jquery.tinysort.min.js" type="text/javascript"></script>
+    <script src="lib/underscore-min.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -16,6 +20,8 @@ var workmap = {};
 
 var nulldatecount = 0;
 var titleyrcount = 0;
+var loadcount =0;
+//var items = [];
 
 var thumbprefix = "http://www.photosau.com.au/Manlylib/Jthumb/";
 
@@ -30,15 +36,42 @@ function loadXml(){// load from Trove
 
   $.get(url, function(data) {
     if ( page == 0){
-      maxpages = Math.floor(parseInt($(data).find("records").attr("total")) / pagelen) + 1; 
+      //maxpages = Math.floor(parseInt($(data).find("records").attr("total")) / pagelen) + 1; 
+     maxpages = 20;
     }
     parseWorks(data);
     page++;
     if (page < maxpages) loadXml();
     else {
-      writeJSON();
+      items = Object.keys(workmap);
+      setupClusters(buildClusterData);
     }
   });
+}
+
+
+function buildClusterData(){
+  console.log("building data");
+ var totalcount = 0;
+  var clustertitles = Object.keys(titleclusters);
+  for (var i = clustertitles.length - 1; i >= 0; i--) {
+    var clusteritems = titleclusters[clustertitles[i]];
+    console.log(clustertitles[i] + ' - ' + clusteritems.length);
+    totalcount += clusteritems.length;
+      for (var j = clusteritems.length - 1; j >= 0; j--) {
+        workmap[clusteritems[j]].cluster = clustertitles[i]; // add the cluster label to the item data
+        //if (clusteritems[j] == "37762683") console.log( workmap[clusteritems[j]]  );
+
+      };
+  };
+  
+  console.log("total items: " +  items.length +" | total in clusters: " + totalcount);
+  
+  for (var t=0; t<items.length; t++){
+    if (! workmap[items[t]].hasOwnProperty("cluster")) console.log(workmap[items[t]]); // print items without a cluster
+  }
+
+  //writeJSON();
 }
 
 function parseWorks(works){ // parse dates and compress the API data into a more compact form

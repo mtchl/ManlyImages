@@ -167,22 +167,32 @@ function clickCluster(clusters, $clickeddiv){
 
 function addToWordMap(item,wordmap){ // pass this function an item and it will add it to the word map
   var re = /\W+/;
-  var titlewords = item.title.split(re); //.getUnique(); // NB getUnique to eliminate repeated words in titles
+  var titlewords = item.title.split(re);
+  titlewords = titlewords.getUnique(); // NB getUnique to eliminate repeated words in titles - but not different cases of the same word!
   titlewords = titlewords.filter(function(element, index, array){
     return (element.length > 2); // filter out short words
   });
   //if (titlewords.length == 0) console.log("no titlewords");
+
  for (var i = titlewords.length - 1; i >= 0; i--) {
       var tw = titlewords[i];
        if (stopwords.contains(tw) == false && tw.search('[0-9][0-9][0-9][0-9]') == -1){
+        var altcase;
         var lowercase = tw.toLowerCase();
         var titlecase = tw.substring(0,1).toUpperCase() + tw.substring(1,tw.length);
-        if ( wordmap.hasOwnProperty(lowercase)  ){ // if the lowercase version of this is in the map
-          addWord(wordmap,lowercase,item.id);
-        } else if (  wordmap.hasOwnProperty(titlecase) ){ // if the title case version is in the map
-          addWord(wordmap,titlecase,item.id);
+        if (titlecase != tw) {
+          altcase = titlecase;
         } else {
+          altcase = lowercase;
+        }
+
+        if ( wordmap.hasOwnProperty(altcase) && ! wordmap[altcase].contains(item.id) ){ // if the other version of this is in the map 
+          addWord(wordmap,altcase,item.id);
+         // if(item.id == "151682935") console.log ("added altcase " + altcase);
+        } 
+        else {
           addWord(wordmap,tw,item.id); // neither is in the map, add it
+         // if(item.id == "151682935") console.log ("added normal " + tw);
         }
       }
   };
@@ -190,6 +200,7 @@ function addToWordMap(item,wordmap){ // pass this function an item and it will a
 
 function addWord(map,key,item){
   if (key == null) return;
+  //if (map.hasOwnProperty(key) && ! map[key].contains(item)){
   if (map.hasOwnProperty(key)){
     map[key].push(item);
   } else {

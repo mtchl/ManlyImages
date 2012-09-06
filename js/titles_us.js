@@ -6,7 +6,7 @@ var minclusterwidth = 39;
 var module_height = 72;
 var module_margin = 4;
 
-var titleitems; // container for the titleitems
+var titleitems = []; // container for the titleitems
 
 var titleclusters = [];
 
@@ -17,21 +17,33 @@ function setupClusters(callback){
    wordmap = {};
    for (var i = items.length - 1; i >= 0; i--) {
       addToWordMap(workmap[items[i]],wordmap);
+    //  if (items[i] == "37762683") console.log("found " + workmap[items[i]].title);
     };
+    //console.log(wordmap);
     titleitems = items.slice(0); // grab a copy of the whole item list
     buildTitleCluster(callback);
+
 }
 
 
-function buildTitleCluster(callback){
-  var sortedmap= bySortedValue(wordmap); // sort map by array length
+function buildTitleCluster(callback){;
+  var target = "151683265";
+
+ if (titleitems.contains(target))console.log("found! in items");
+  //var sortedmap = _.sortBy(wordmap, function(items){ return items.length*-1; }); // sort highest to lowest
+
+  //console.log (sortedmap);
+  var sortedmap = bySortedValue(wordmap); // sort map by array length
   //var sortedwords = Object.keys(sortedmap); // just the words
   var topword = sortedmap[0][0];
   //var topfive = [sortedmap[0][0], sortedmap[1][0] , sortedmap[2][0], sortedmap[3][0], sortedmap[4][0], sortedmap[5][0]];
-  //console.log(topword + " is the most common word - making a cluster with "  + wordmap[topword].length + " items")
+  console.log(topword + " is the most common word - making a cluster with "  + wordmap[topword].length + " items")
+  
   var clusterIDs = wordmap[topword];
   titleclusters[topword] = sortClusterItems(clusterIDs); // store this list of items in the clusters map
  
+  if (clusterIDs.contains(target))console.log("found! in cluster");
+
  var clustermap = {}; // new map for this cluster's words
   for (var ci=0; ci<clusterIDs.length; ci++){
     addToWordMap(workmap[clusterIDs[ci]],clustermap);
@@ -40,13 +52,17 @@ function buildTitleCluster(callback){
   var sortedclustermap = bySortedValue(clustermap);
   var topterms = sortedclustermap.slice(1,11); 
  
+  
   for (var i = clusterIDs.length - 1; i >= 0; i--) {
+    if (clusterIDs.contains(target)) console.log("     - " + clusterIDs[i] + ' : ' + workmap[clusterIDs[i]].title);
     var idx = titleitems.indexOf(clusterIDs[i]); // find the index of this item in the array
     titleitems.remove(idx); // remove it
+    //if (clusterIDs[i] == "37762683") console.log("removed from items | index " + idx);
+    
   };
 
   // now rebuild the wordmap
-  wordmap = []; // clear the wordmap
+  wordmap = {}; // clear the wordmap
   for (var i = titleitems.length - 1; i >= 0; i--) {
     addToWordMap(workmap['' + titleitems[i]], wordmap); // rebuild the wordmap
   };
@@ -59,6 +75,8 @@ function buildTitleCluster(callback){
     buildTitleCluster(callback); // build another cluster
   } else { // make the "others" box and finish up
     titleclusters["others"] = sortClusterItems(titleitems); // stick all the rest in an "others" cluster 
+    if (titleitems.contains(target)) console.log("found in others");
+
     topterms = sortedmap.slice(1,11); // use the top level term list for the "others" cluster
     buildClusterDateHisto("others",10,titleclusters);
     buildClusterDiv("others", titleitems, topterms);
@@ -77,9 +95,9 @@ function buildTitleCluster(callback){
     //rotateBackground(); // start rotating bgs
 
     //console.log(clusters[0]);
-    window.setTimeout(function(){ callback(); }, 1000);
+    //window.setTimeout(function(){ callback(); }, 1000);
    
-
+    callback();
  }
 
 }
