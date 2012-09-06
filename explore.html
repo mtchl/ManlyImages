@@ -52,7 +52,7 @@ $(document).ready(function(){
 
 function loadWorks(buildfn){ // for loading from JSON
   //console.log("loading");
-  $.get("data/Manly_yr.json", function(data){
+  $.get("data/ManlyClusters.json", function(data){
     workmap = JSON.parse(data);
     items = Object.keys(workmap);
     loaded = true;
@@ -114,7 +114,7 @@ function buildTitleView(){
       console.log("emptying container");
         $('#container').empty();
         $('#container').addClass("loading");
-        setupClusters(finishTitleBuild);
+        buildTitleClusters(finishTitleBuild);
       });
   }
 
@@ -122,7 +122,7 @@ function buildTitleView(){
       $('#container').empty(); 
       $('#container').append($titles); // add the stored DOM elements
     } else {
-       setupClusters(finishTitleBuild);
+       buildTitleClusters(finishTitleBuild);
     }
 
   rotateBg = setInterval(function () { 

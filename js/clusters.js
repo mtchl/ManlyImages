@@ -8,7 +8,7 @@ var clustertotal = 0;
 var items = []; // item IDs
 var workmap = {}; // associative array of works, indexed by ID
 var wordmap = {};
-var stopwords = ["The","and","the","Manly","length","from","for","For","with","title","North","north","South","south","East","east","West","west"]; // ouch - gotta include "length" because it's a special property... this is why we need to use a proper data structure...
+var stopwords = ["The","and","the","manly","Manly","length","from","for","For","with","title","North","north","South","south","East","east","West","west"]; // ouch - gotta include "length" because it's a special property... this is why we need to use a proper data structure...
 
 var clusterDateHistos = [];
 
@@ -177,20 +177,22 @@ function addToWordMap(item,wordmap){ // pass this function an item and it will a
  for (var i = titlewords.length - 1; i >= 0; i--) {
       var tw = titlewords[i];
        if (stopwords.contains(tw) == false && tw.search('[0-9][0-9][0-9][0-9]') == -1){
+        //tw = tw.toLowerCase();
         var altcase;
         var lowercase = tw.toLowerCase();
         var titlecase = tw.substring(0,1).toUpperCase() + tw.substring(1,tw.length);
+
         if (titlecase != tw) {
           altcase = titlecase;
         } else {
           altcase = lowercase;
         }
 
-        if ( wordmap.hasOwnProperty(altcase) && ! wordmap[altcase].contains(item.id) ){ // if the other version of this is in the map 
+        if ( wordmap.hasOwnProperty(altcase)){ // if the other version of this is in the map 
           addWord(wordmap,altcase,item.id);
          // if(item.id == "151682935") console.log ("added altcase " + altcase);
         } 
-        else {
+       else {
           addWord(wordmap,tw,item.id); // neither is in the map, add it
          // if(item.id == "151682935") console.log ("added normal " + tw);
         }
@@ -200,8 +202,7 @@ function addToWordMap(item,wordmap){ // pass this function an item and it will a
 
 function addWord(map,key,item){
   if (key == null) return;
-  //if (map.hasOwnProperty(key) && ! map[key].contains(item)){
-  if (map.hasOwnProperty(key)){
+  if (map.hasOwnProperty(key) && map[key].contains(item) == false){
     map[key].push(item);
   } else {
     map[key] = [];

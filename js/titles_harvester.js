@@ -1,12 +1,12 @@
 
 ///TITLE clusters
 
-var clusterscale = 0.87;
-var minclusterwidth = 38;
+var clusterscale = 0.9;
+var minclusterwidth = 39;
 var module_height = 72;
 var module_margin = 4;
 
-var titleitems; // container for the titleitems
+var titleitems = []; // container for the titleitems
 
 var titleclusters = [];
 
@@ -17,41 +17,68 @@ function setupClusters(callback){
    wordmap = {};
    for (var i = items.length - 1; i >= 0; i--) {
       addToWordMap(workmap[items[i]],wordmap);
+    //  if (items[i] == "37762683") console.log("found " + workmap[items[i]].title);
     };
+    //console.log(wordmap);
     titleitems = items.slice(0); // grab a copy of the whole item list
     buildTitleCluster(callback);
+
 }
 
 
-function buildTitleClusters(callback){
-  // group the items into clusters
-  for (var i=0; i<items.length; i++){
-    var wk = workmap[items[i]];
-    if (titleclusters.hasOwnProperty(wk.cluster)){
-      titleclusters[wk.cluster].push(wk.id);
-    } else {
-      titleclusters[wk.cluster] = [wk.id];
-    }
-  }
-  var clusternames = Object.keys(titleclusters);
+function buildTitleCluster(callback){
 
-  for (var c=0; c<clusternames.length; c++){ // now generate cluster data and divs
-      var clustermap = {}; // new map for this cluster's words
-      titleclusters[clusternames[c]] = sortClusterItems(titleclusters[clusternames[c]]);
-      var clusterIDs = titleclusters[clusternames[c]];
-      for (var ci=0; ci<clusterIDs.length; ci++){
-        addToWordMap(workmap[clusterIDs[ci]],clustermap);
-      }
+  console.log(titleitems.length + " items remaining");
+  var sortedmap = bySortedValue(wordmap); // sort map by array length
+  var topword = sortedmap[0][0];
+  console.log(topword + " is the most common word - making a cluster with "  + wordmap[topword].length + " items")
+  var clusterIDs = wordmap[topword];
+  titleclusters[topword] = sortClusterItems(clusterIDs); // store this list of items in the clusters map
 
-      var sortedclustermap = bySortedValue(clustermap);
-      var topterms = sortedclustermap.slice(1,11); 
 
-      buildClusterDateHisto(clusternames[c],10,titleclusters);
-      buildClusterDiv( clusternames[c], clusterIDs, topterms ); // build the cluster div
+ var clustermap = {}; // new map for this cluster's words
+  for (var ci=0; ci<clusterIDs.length; ci++){
+    addToWordMap(workmap[clusterIDs[ci]],clustermap);
   }
 
-  $('#container div.clusterdiv').tsort({order:'desc', attr:'data-itemcount'});// sort by name
-  $('#container').removeClass("loading");
+  var sortedclustermap = bySortedValue(clustermap);
+  var topterms = sortedclustermap.slice(1,11); 
+ 
+  
+  for (var i = clusterIDs.length - 1; i >= 0; i--) {
+   workmap[clusterIDs[i]].cluster = topword;
+    var idx = titleitems.indexOf(clusterIDs[i]); // find the index of this item in the array
+    if (idx < 0) console.log("error - could not find item to remove");
+    titleitems.remove(idx); // remove it
+  }
+
+  // now rebuild the wordmap
+  wordmap = {}; // clear the wordmap
+  for (var i = titleitems.length - 1; i >= 0; i--) {
+    addToWordMap(workmap['' + titleitems[i]], wordmap); // rebuild the wordmap
+  };
+
+  buildClusterDateHisto(topword,10,titleclusters);
+  buildClusterDiv( topword, clusterIDs, topterms ); // build the cluster div
+
+ if (clusterIDs.length > minClusterSize ) { // more than the min items in the cluster
+    buildTitleCluster(callback); // build another cluster
+  } else { // make the "others" box and finish up
+    titleclusters["others"] = sortClusterItems(titleitems); // stick all the rest in an "others" cluster 
+
+    for (var i = titleitems.length - 1; i >= 0; i--) {
+    workmap[titleitems[i]].cluster = "others";
+  }
+
+    topterms = sortedmap.slice(1,11); // use the top level term list for the "others" cluster
+    buildClusterDateHisto("others",10,titleclusters);
+    buildClusterDiv("others", titleitems, topterms);
+    $('#container div.clusterdiv').tsort({order:'desc', attr:'data-itemcount'});// sort by name
+    
+   $('#container').removeClass("loading");
+   
+    callback();
+ }
 
 }
 
