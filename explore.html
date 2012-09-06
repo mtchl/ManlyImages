@@ -110,12 +110,12 @@ function buildTitleView(){
   if ($decades == undefined && $('#container').children().length > 0){
     $decades = $('#container').children('.clusterdiv').clone(true); // clone the div and store it
     
-    $('#container').fadeOut(1000,function(){
+    //$('#container').fadeOut(1000,function(){
       console.log("emptying container");
         $('#container').empty();
         $('#container').addClass("loading");
         buildTitleClusters(finishTitleBuild);
-      });
+     // });
   }
 
    if ($titles != undefined){
