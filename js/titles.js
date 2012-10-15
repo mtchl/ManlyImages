@@ -25,6 +25,7 @@ function setupClusters(callback){
 
 function buildTitleClusters(callback){
   // group the items into clusters
+  titleclusters = []; // reset the title clusters
   for (var i=0; i<items.length; i++){
     var wk = workmap[items[i]];
     if (titleclusters.hasOwnProperty(wk.cluster)){
